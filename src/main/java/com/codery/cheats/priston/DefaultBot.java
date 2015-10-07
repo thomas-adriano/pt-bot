@@ -4,20 +4,18 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.RunnableFuture;
 
 /**
  * Created by thomasadriano on 24/09/15.
  */
-public class DefaultBot implements Bot {
+public class DefaultBot <T extends CmdListener> implements Bot {
 
     private String[] stopCmd = Bot.DEFAULT_STOP_CMD;
-    private final ExecutorService executorService;
-    private final ScreenEventsListener eventsListener;
+    private final Set<T> cmdListeners;
 
-    public DefaultBot(ExecutorService execService, ScreenEventsListener eventsListener) {
-        this.executorService = execService;
-        this.eventsListener = eventsListener;
+
+    public DefaultBot(List<T> eventsListeners) {
+        this.cmdListeners = new HashSet<>(eventsListeners);
     }
 
     @Override
@@ -44,49 +42,7 @@ public class DefaultBot implements Bot {
 
     @Override
     public ExecutionPromise run(Script s) {
-        Runnable stopListener = new Runnable() {
-
-
-            @Override
-            public void run() {
-                ScreenEventsListener.KeyListener l = new GlobalScreenEventsListener.GlobalKeyListener();
-                Set<Integer> keysPressed = new HashSet<>();
-                int[] stopCmd2 = new int[]{162, 164, 88};
-
-                l.keyPressed((k) -> {
-//            162 pressed! ¢
-//            164 pressed! ¤
-//            88 pressed! X
-
-                    for (int i = 0; i < stopCmd.length; i++) {
-                        if (k.asciiCode() == stopCmd2[i]) {
-                            keysPressed.add(stopCmd2[i]);
-                        }
-                    }
-
-                    if (keysPressed.size() == stopCmd.length) {
-                        System.out.println("Stop command " + Arrays.toString(stopCmd) + " pressed.");
-                        terminateBot();
-                    }
-
-                });
-
-                eventsListener.addKeyListener(l);
-                eventsListener.listen();
-
-                while (true) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
-
-        executorService.submit(stopListener);
-        
-        return new DefaultExecutionPromise(s, stopCmd);
+        return new DefaultExecutionPromise(s, cmdListeners);
     }
 
 
@@ -101,33 +57,27 @@ public class DefaultBot implements Bot {
         return new DefaultScript(r);
     }
 
-    @Override
-    public void terminateBot() {
-        executorService.shutdownNow();
-        if (executorService.isShutdown()) {
-            System.exit(-1);
-        }
-    }
-
-    private static class DefaultExecutionPromise implements ExecutionPromise {
+    private static class DefaultExecutionPromise <T extends CmdListener> implements ExecutionPromise {
 
         private final Script script;
-        private final String[] stopCmd;
+        private final Set<T> cmdListeners;
 
-        public DefaultExecutionPromise(Script s, String... stopCmd) {
+        public DefaultExecutionPromise(Script s, Set<T> cmdListeners) {
             this.script = s;
-            this.stopCmd = stopCmd;
+            this.cmdListeners = cmdListeners;
         }
 
         @Override
         public void once() {
             script.printSummary();
+            startListeners();
             script.execute();
         }
 
         @Override
         public void forever() {
             script.printSummary();
+            startListeners();
             while (true) {
                 script.execute();
             }
@@ -136,10 +86,18 @@ public class DefaultBot implements Bot {
         @Override
         public void loop(int times) {
             script.printSummary();
+            startListeners();
             for (int i = 0; i < times; i++) {
                 script.execute();
             }
         }
+
+        private void startListeners() {
+            for (CmdListener listener : cmdListeners) {
+                listener.start();
+            }
+        }
+
     }
 
 }

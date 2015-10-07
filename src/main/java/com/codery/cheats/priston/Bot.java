@@ -15,6 +15,4 @@ public interface Bot {
 
     Script createScript();
 
-    void terminateBot();
-
 }
