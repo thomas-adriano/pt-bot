@@ -1,11 +1,10 @@
 package com.codery.cheats.priston;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RunnableFuture;
 
 /**
  * Created by thomasadriano on 24/09/15.
@@ -13,10 +12,12 @@ import java.util.concurrent.ExecutorService;
 public class DefaultBot implements Bot {
 
     private String[] stopCmd = Bot.DEFAULT_STOP_CMD;
-    private ExecutorService executorService;
+    private final ExecutorService executorService;
+    private final ScreenEventsListener eventsListener;
 
-    public DefaultBot(ExecutorService execService) {
+    public DefaultBot(ExecutorService execService, ScreenEventsListener eventsListener) {
         this.executorService = execService;
+        this.eventsListener = eventsListener;
     }
 
     @Override
@@ -40,8 +41,49 @@ public class DefaultBot implements Bot {
         return stopCmd;
     }
 
+
     @Override
     public ExecutionPromise run(Script s) {
+        Runnable stopListener = new Runnable() {
+
+
+            @Override
+            public void run() {
+                ScreenEventsListener.KeyListener l = new GlobalScreenEventsListener.GlobalKeyListener();
+                Set<Integer> keysPressed = new HashSet<>();
+                int[] stopCmd2 = new int[]{162, 164, 88};
+
+                l.keyPressed((k) -> {
+//            162 pressed! ¢
+//            164 pressed! ¤
+//            88 pressed! X
+
+                    for (int i = 0; i < stopCmd.length; i++) {
+                        if (k.asciiCode() == stopCmd2[i]) {
+                            keysPressed.add(stopCmd2[i]);
+                        }
+                    }
+
+                    if (keysPressed.size() == stopCmd.length) {
+                        System.out.println("Stop command " + Arrays.toString(stopCmd) + " pressed.");
+                        terminateBot();
+                    }
+
+                });
+
+                eventsListener.addKeyListener(l);
+                eventsListener.listen();
+
+                while (true) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+
         return new DefaultExecutionPromise(s, stopCmd);
     }
 
