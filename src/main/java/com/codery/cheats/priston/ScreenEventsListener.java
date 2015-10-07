@@ -25,6 +25,8 @@ public interface ScreenEventsListener extends AutoCloseable {
 
     public static interface KeyEvent {
 
+    	char character();
+    	
         int asciiCode();
 
     }

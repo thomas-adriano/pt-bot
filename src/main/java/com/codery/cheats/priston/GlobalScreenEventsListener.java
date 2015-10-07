@@ -6,12 +6,19 @@ import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by thomasadriano on 06/10/15.
  */
 public class GlobalScreenEventsListener implements ScreenEventsListener {
 
+	public GlobalScreenEventsListener() {
+		Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
+		logger.setLevel(Level.WARNING);
+	}
+	
     @Override
     public <T extends KeyListener> ScreenEventsListener addKeyListener(T listener) {
         GlobalScreen.addNativeKeyListener(new GlobalKeyListener(listener).getNativeKeyListener());
@@ -49,6 +56,11 @@ public class GlobalScreenEventsListener implements ScreenEventsListener {
         public int asciiCode() {
             return event.getRawCode();
         }
+
+		@Override
+		public char character() {
+			return (char) event.getRawCode();
+		}
     }
 
 

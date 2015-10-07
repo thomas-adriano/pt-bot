@@ -1,26 +1,34 @@
 package com.codery.cheats.priston;
 
+import org.jnativehook.GlobalScreen;
 import org.junit.Test;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by thomasadriano on 06/10/15.
  */
 public class GlobalScreenEventsListenerTest {
 
-    @Test
-    public void t() throws InterruptedException {
-        GlobalScreenEventsListener l = new GlobalScreenEventsListener();
+	@Test
+	public void t() throws Exception {
 
-        GlobalScreenEventsListener.GlobalKeyListener lis = new GlobalScreenEventsListener.GlobalKeyListener();
-        lis.keyPressed((k) -> System.out.println(k.asciiCode()+ " pressed!"));
+		GlobalScreenEventsListener l = new GlobalScreenEventsListener();
 
-        l.addKeyListener(lis);
+		GlobalScreenEventsListener.GlobalKeyListener lis = new GlobalScreenEventsListener.GlobalKeyListener();
+		lis.keyPressed((k) -> System.out.println(k.asciiCode() + " pressed! "+ k.character()));
 
-        l.listen();
+		l.addKeyListener(lis);
 
-        while (true) {
-            Thread.sleep(100);
-        }
+		l.listen();
 
-    }
+//		l.stopListening();
+		
+		while (true) {
+			Thread.sleep(100);
+		}
+
+
+	}
 }
