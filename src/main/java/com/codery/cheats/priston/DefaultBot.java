@@ -61,7 +61,10 @@ public class DefaultBot <T extends CmdListener> implements Bot {
 
         private final Script script;
         private final Set<T> cmdListeners;
-
+        boolean once;
+        boolean forever;
+        boolean loop;
+        
         public DefaultExecutionPromise(Script s, Set<T> cmdListeners) {
             this.script = s;
             this.cmdListeners = cmdListeners;
@@ -69,29 +72,40 @@ public class DefaultBot <T extends CmdListener> implements Bot {
 
         @Override
         public void once() {
-            script.printSummary();
-            startListeners();
-            script.execute();
+        	once = true;
+            execute(0);
         }
 
         @Override
         public void forever() {
-            script.printSummary();
-            startListeners();
-            while (true) {
-                script.execute();
-            }
+        	forever = true;
+            execute(0);
         }
 
         @Override
         public void loop(int times) {
-            script.printSummary();
-            startListeners();
-            for (int i = 0; i < times; i++) {
-                script.execute();
-            }
+        	loop = true;
+            execute(times);
         }
 
+        void execute(long times) {
+            script.printSummary();
+            startListeners();
+            if (once) {
+                script.execute();
+            }
+            if (forever) {
+                while (true) {
+                    script.execute();
+                }
+            }
+            if (loop) {
+                for (int i = 0; i < times; i++) {
+                    script.execute();
+                }
+            }
+        }
+        
         private void startListeners() {
             for (CmdListener listener : cmdListeners) {
                 listener.start();

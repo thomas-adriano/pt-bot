@@ -1,26 +1,33 @@
 package com.codery.cheats.priston;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.function.Predicate;
+import java.util.concurrent.Executors;
 
-/**
- * Created by thomasadriano on 25/09/15.
- */
-public class StopBotCmdListener implements CmdListener {
-
+public class StartBotCmdListener implements CmdListener {
 	private final ExecutorService executor;
 	private final ScreenEventsListener eventsListener;
-	private final int[] stopCmd;
-	private boolean stillRunning = true;
+	private final int[][] stopCmd;
+	private final Bot bot;
+	private boolean stillRunning;
+	private final Set<Script> scripts;
+	private Set<Integer> keysPressed = new HashSet<>();
 
-	public <T extends ScreenEventsListener> StopBotCmdListener(ExecutorService executor, T eventsListener,
-			int[] stopCmd) {
+	public <T extends ScreenEventsListener> StartBotCmdListener(ExecutorService executor, T eventsListener,
+			int[][] stopCmd, Bot bot, Collection<Script> script) {
 		this.executor = executor;
 		this.eventsListener = eventsListener;
 		this.stopCmd = stopCmd;
+		this.bot = bot;
+		this.scripts = new HashSet<>(script);
+		
+		if (scripts.size() != stopCmd.length) {
+			throw new RuntimeException("You have to add one startCmd for script present.");
+		}
 	}
 
 	@Override
@@ -30,7 +37,6 @@ public class StopBotCmdListener implements CmdListener {
 			@Override
 			public void run() {
 				ScreenEventsListener.KeyListener l = new GlobalScreenEventsListener.GlobalKeyListener();
-				Set<Integer> keysPressed = new HashSet<>();
 
 				l.keyPressed((k) -> {
 					// 162 pressed! ¢
@@ -38,14 +44,18 @@ public class StopBotCmdListener implements CmdListener {
 					// 88 pressed! X
 
 					for (int i = 0; i < stopCmd.length; i++) {
-						if (k.asciiCode() == stopCmd[i]) {
-							keysPressed.add(stopCmd[i]);
+						for (int j = 0; j < stopCmd[i].length; i++) {
+							if (k.asciiCode() == stopCmd[i][j]) {
+								keysPressed.add(stopCmd[i][j]);
+							}
 						}
 					}
 
 					if (keysPressed.size() == stopCmd.length) {
-						System.out.println("Stop command " + Arrays.toString(stopCmd) + " pressed.");
-						terminateBot();
+							System.out.println("Pause command " + Arrays.toString(stopCmd) + " pressed.");
+						
+						
+						startBot();
 					}
 
 				});
@@ -67,12 +77,12 @@ public class StopBotCmdListener implements CmdListener {
 		stillRunning = false;
 	}
 
-	public void terminateBot() {
-		executor.shutdownNow();
-		while (!executor.isShutdown()) {
-			sleep(100);
+	public void startBot() {
+		// TODO TERMINAR
+		for (int i = 0; i < keysPressed.size(); i++) {
+			bot.run(new ArrayList<>(scripts).get(i));
 		}
-	
+
 		System.exit(-1);
 	}
 
