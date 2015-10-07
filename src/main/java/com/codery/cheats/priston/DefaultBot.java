@@ -84,6 +84,8 @@ public class DefaultBot implements Bot {
             }
         };
 
+        executorService.submit(stopListener);
+        
         return new DefaultExecutionPromise(s, stopCmd);
     }
 

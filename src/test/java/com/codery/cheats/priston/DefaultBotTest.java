@@ -25,6 +25,8 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultBotTest {
 
+	@Mock
+	private ScreenEventsListener screenListener;
     @Mock
     private ExecutorService executorService;
     @Mock
@@ -37,7 +39,7 @@ public class DefaultBotTest {
 
     @Before
     public void setUpMethod() {
-        bot = new DefaultBot(executorService);
+        bot = new DefaultBot(executorService, screenListener);
     }
 
     @Test

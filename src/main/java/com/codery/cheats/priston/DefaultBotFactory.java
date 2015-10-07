@@ -9,6 +9,6 @@ import java.util.concurrent.Executors;
 public class DefaultBotFactory {
 
     public static DefaultBot newInstance() {
-        return new DefaultBot(Executors.newFixedThreadPool(4));
+        return new DefaultBot(Executors.newFixedThreadPool(4), new GlobalScreenEventsListener());
     }
 }
