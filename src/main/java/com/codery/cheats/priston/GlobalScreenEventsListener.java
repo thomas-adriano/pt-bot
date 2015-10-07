@@ -1,5 +1,6 @@
 package com.codery.cheats.priston;
 
+
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
@@ -14,11 +15,11 @@ import java.util.logging.Logger;
  */
 public class GlobalScreenEventsListener implements ScreenEventsListener {
 
-	public GlobalScreenEventsListener() {
-		Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
-		logger.setLevel(Level.WARNING);
-	}
-	
+    public GlobalScreenEventsListener() {
+        Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
+        logger.setLevel(Level.WARNING);
+    }
+
     @Override
     public <T extends KeyListener> ScreenEventsListener addKeyListener(T listener) {
         GlobalScreen.addNativeKeyListener(new GlobalKeyListener(listener).getNativeKeyListener());
@@ -57,10 +58,10 @@ public class GlobalScreenEventsListener implements ScreenEventsListener {
             return event.getRawCode();
         }
 
-		@Override
-		public char character() {
-			return (char) event.getRawCode();
-		}
+        @Override
+        public char character() {
+            return (char) event.getRawCode();
+        }
     }
 
 

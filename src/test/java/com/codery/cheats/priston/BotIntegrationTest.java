@@ -20,7 +20,7 @@ public class BotIntegrationTest {
     public void integrationTest() {
         System.out.println("Starting Priston Bot...");
 
-        Bot b = DefaultBotFactory.newInstance();
+        Bot b = new DefaultBot();
         Script s = new DefaultScript(robot);
 
 //        s.add(

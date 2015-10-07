@@ -13,11 +13,11 @@ public class StopBotCmdListener implements CmdListener {
 
 	private final ExecutorService executor;
 	private final ScreenEventsListener eventsListener;
-	private final int[] stopCmd;
+	private final Integer[] stopCmd;
 	private boolean stillRunning = true;
 
 	public <T extends ScreenEventsListener> StopBotCmdListener(ExecutorService executor, T eventsListener,
-			int[] stopCmd) {
+			Integer[] stopCmd) {
 		this.executor = executor;
 		this.eventsListener = eventsListener;
 		this.stopCmd = stopCmd;

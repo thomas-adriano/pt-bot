@@ -1,7 +1,10 @@
 package com.codery.cheats.priston;
 
-
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by thomasadriano on 24/09/15.
@@ -11,7 +14,7 @@ public class App {
     private static final BotStrategy WALKING_LEVELING = new BotStrategy() {
         @Override
         public void run() {
-            Bot b = DefaultBotFactory.newInstance();
+            Bot b = new DefaultBot();
             Script s = b.createScript();
             Screen screen = new Screen();
 //
@@ -34,7 +37,7 @@ public class App {
     private static final BotStrategy STATIC_LEVELING = new BotStrategy() {
         @Override
         public void run() {
-            Bot b = DefaultBotFactory.newInstance();
+            Bot b = new DefaultBot();
             Script s = b.createScript();
 
             //TODO the use of interval its being repetitive. Put the minumum
@@ -54,7 +57,7 @@ public class App {
     private static final BotStrategy SIMPLE_CLICKING = new BotStrategy() {
         @Override
         public void run() {
-            Bot b = DefaultBotFactory.newInstance();
+            Bot b = new DefaultBot();
             Script s = b.createScript();
 
             //TODO the use of interval its being repetitive. Put the minumum
@@ -67,14 +70,42 @@ public class App {
         }
     };
 
+    private final static Integer[] DEFAULT_STOP_CMD = new Integer[]{162/*ctrl*/, 164/*alt*/, 88/*x*/};
+    private final static Integer[] DEFAULT_START_CMD_0 = new Integer[]{162/*ctrl*/, 164/*alt*/, 48};
+    private final static Integer[] DEFAULT_START_CMD_1 = new Integer[]{162/*ctrl*/, 164/*alt*/, 49};
+    private final static Integer[] DEFAULT_START_CMD_2 = new Integer[]{162/*ctrl*/, 164/*alt*/, 50};
+    private final static Integer[] DEFAULT_START_CMD_3 = new Integer[]{162/*ctrl*/, 164/*alt*/, 51};
+    private final static Integer[] DEFAULT_START_CMD_4 = new Integer[]{162/*ctrl*/, 164/*alt*/, 52};
+    private final static Integer[] DEFAULT_START_CMD_5 = new Integer[]{162/*ctrl*/, 164/*alt*/, 53};
+    private final static Integer[] DEFAULT_START_CMD_6 = new Integer[]{162/*ctrl*/, 164/*alt*/, 54};
+    private final static Integer[] DEFAULT_START_CMD_7 = new Integer[]{162/*ctrl*/, 164/*alt*/, 55};
+    private final static Integer[] DEFAULT_START_CMD_8 = new Integer[]{162/*ctrl*/, 164/*alt*/, 56};
+    private final static Integer[] DEFAULT_START_CMD_9 = new Integer[]{162/*ctrl*/, 164/*alt*/, 57};
+
     public static void main(String[] args) throws InterruptedException, AWTException {
         System.out.println("Starting Priston Bot...");
         Thread.sleep(5000);
 
-        SIMPLE_CLICKING.run();
+        ExecutorService executor = Executors.newFixedThreadPool(4);
+        GlobalScreenEventsListener eventsListener = new GlobalScreenEventsListener();
+
+        Application app = new DefaultApplication();
+
+        Map<Integer[], BotStrategy> strategies = new HashMap<>();
+        strategies.put(DEFAULT_START_CMD_0, SIMPLE_CLICKING);
+        strategies.put(DEFAULT_START_CMD_1, WALKING_LEVELING);
+        strategies.put(DEFAULT_START_CMD_2, STATIC_LEVELING);
+
+        CmdListener l1 = new StopBotCmdListener(executor, eventsListener, DEFAULT_STOP_CMD);
+        CmdListener l2 = new StartBotCmdListener(executor, eventsListener, app, strategies);
+
+        app.registerListeners(l1, l2);
+        app.registerStrategies(WALKING_LEVELING, SIMPLE_CLICKING, STATIC_LEVELING);
+
+        app.start();
     }
 
-    private interface BotStrategy {
+    public interface BotStrategy {
 
         void run();
 
