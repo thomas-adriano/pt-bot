@@ -37,26 +37,28 @@ public class StartBotCmdListener implements CmdListener {
 					Object lock = new Object();
 
 					synchronized (lock) {
+
+						long timeElapsed = -1;
+
+						if (executionTimes[0] == 0) {
+							executionTimes[0] = k.eventTime();
+						} else {
+							timeElapsed = k.eventTime() - executionTimes[0];
+							executionTimes[0] = k.eventTime();
+						}
+
+						System.out.println("Time elapsed since last keypress: " + timeElapsed);
+
+						if (timeElapsed > 1l && timeElapsed != -1) {
+							keysPressed.clear();
+						}
+
 						for (Integer[] cmd : strategies.keySet()) {
-
-							long timeElapsed = -1;
-
-							if (executionTimes[0] == 0) {
-								executionTimes[0] = k.eventTime();
-							} else {
-								timeElapsed = k.eventTime() - executionTimes[0];
-								executionTimes[0] = k.eventTime();
-							}
-
-							System.out.println("Time elapsed since last keypress: " + timeElapsed);
-
-							if (timeElapsed > 1l && timeElapsed != -1) {
-								keysPressed.clear();
-							}
-
 							for (int i = 0; i < cmd.length; i++) {
 								if (k.asciiCode() == cmd[i]) {
-									keysPressed.add(cmd[i]);
+									if (!keysPressed.contains(cmd[i])) {
+										keysPressed.add(cmd[i]);
+									}
 								}
 							}
 						}

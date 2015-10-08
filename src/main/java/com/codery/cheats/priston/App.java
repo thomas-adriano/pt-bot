@@ -98,7 +98,7 @@ public class App {
         CmdListener l1 = new StopBotCmdListener(executor, eventsListener, DEFAULT_STOP_CMD);
         CmdListener l2 = new StartBotCmdListener(executor, eventsListener, app, strategies);
 
-        app.registerListeners(l1, l2);
+        app.registerListeners(l2);
         app.registerStrategies(WALKING_LEVELING, SIMPLE_CLICKING, STATIC_LEVELING);
 
         app.start();
