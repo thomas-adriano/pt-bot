@@ -1,6 +1,5 @@
 package com.codery.cheats.priston;
 
-
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
@@ -15,112 +14,118 @@ import java.util.logging.Logger;
  */
 public class GlobalScreenEventsListener implements ScreenEventsListener {
 
-    public GlobalScreenEventsListener() {
-        Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
-        logger.setLevel(Level.WARNING);
-    }
+	public GlobalScreenEventsListener() {
+		Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
+		logger.setLevel(Level.WARNING);
+	}
 
-    @Override
-    public <T extends KeyListener> ScreenEventsListener addKeyListener(T listener) {
-        GlobalScreen.addNativeKeyListener(new GlobalKeyListener(listener).getNativeKeyListener());
-        return this;
-    }
+	@Override
+	public <T extends KeyListener> ScreenEventsListener addKeyListener(T listener) {
+		System.out.println("Adding a new Global Key Listener");
+		GlobalScreen.addNativeKeyListener(new GlobalKeyListener(listener).getNativeKeyListener());
+		return this;
+	}
 
-    @Override
-    public void listen() {
-        try {
-            GlobalScreen.registerNativeHook();
-        } catch (NativeHookException e) {
-            throw new RuntimeException("It wasn't possible to start key listening.\n" + e.getMessage());
-        }
-    }
+	@Override
+	public void listen() {
+		try {
+			GlobalScreen.registerNativeHook();
+		} catch (NativeHookException e) {
+			throw new RuntimeException("It wasn't possible to start key listening.\n" + e.getMessage());
+		}
+	}
 
-    @Override
-    public void stopListening() throws Exception {
-        close();
-    }
+	@Override
+	public void stopListening() throws Exception {
+		close();
+	}
 
-    @Override
-    public void close() throws Exception {
-        GlobalScreen.unregisterNativeHook();
-    }
+	@Override
+	public void close() throws Exception {
+		GlobalScreen.unregisterNativeHook();
+	}
 
-    public static class GlobalKeyEvent implements KeyEvent {
+	public static class GlobalKeyEvent implements KeyEvent {
 
-        private final NativeKeyEvent event;
+		private final NativeKeyEvent event;
 
-        public GlobalKeyEvent(NativeKeyEvent event) {
-            this.event = event;
-        }
+		public GlobalKeyEvent(NativeKeyEvent event) {
+			this.event = event;
+		}
 
-        @Override
-        public int asciiCode() {
-            return event.getRawCode();
-        }
+		@Override
+		public int asciiCode() {
+			return event.getRawCode();
+		}
 
-        @Override
-        public char character() {
-            return (char) event.getRawCode();
-        }
-    }
+		@Override
+		public char character() {
+			return (char) event.getRawCode();
+		}
 
+		@Override
+		public long eventTime() {
+			return event.getWhen();
+		}
+	}
 
-    public static class GlobalKeyListener implements KeyListener {
+	public static class GlobalKeyListener implements KeyListener {
 
-        private Consumer<KeyEvent> keyPressedCons;
-        private Consumer<KeyEvent> keyReleasedCons;
-        private KeyListener listener;
+		private Consumer<KeyEvent> keyPressedCons;
+		private Consumer<KeyEvent> keyReleasedCons;
+		
+		public GlobalKeyListener(KeyListener listener) {
+			this.keyPressedCons = listener.getKeyPressedConsumer();
+			this.keyReleasedCons = listener.getKeyReleasedConsumer();
+		}
 
-        public GlobalKeyListener(KeyListener listener) {
-            this.listener = listener;
-            this.keyPressedCons = listener.getKeyPressedConsumer();
-            this.keyReleasedCons = listener.getKeyReleasedConsumer();
-        }
+		public GlobalKeyListener() {
 
-        public GlobalKeyListener() {
+		}
 
-        }
+		@Override
+		public void keyPressed(Consumer<KeyEvent> cons) {
+			this.keyPressedCons = cons;
+		}
 
-        @Override
-        public void keyPressed(Consumer<KeyEvent> cons) {
-            this.keyPressedCons = cons;
-        }
+		@Override
+		public void keyReleased(Consumer<KeyEvent> cons) {
+			this.keyReleasedCons = cons;
+		}
 
-        @Override
-        public void keyReleased(Consumer<KeyEvent> cons) {
-            this.keyReleasedCons = cons;
-        }
+		@Override
+		public Consumer<KeyEvent> getKeyPressedConsumer() {
+			return keyPressedCons;
+		}
 
-        @Override
-        public Consumer<KeyEvent> getKeyPressedConsumer() {
-            return keyPressedCons;
-        }
+		@Override
+		public Consumer<KeyEvent> getKeyReleasedConsumer() {
+			return keyReleasedCons;
+		}
 
-        @Override
-        public Consumer<KeyEvent> getKeyReleasedConsumer() {
-            return keyReleasedCons;
-        }
+		public NativeKeyListener getNativeKeyListener() {
+			return new NativeKeyListener() {
+				@Override
+				public void nativeKeyPressed(NativeKeyEvent nke) {
+					if (keyPressedCons != null) {
+						keyPressedCons.accept(new GlobalKeyEvent(nke));
+					}
+				}
 
-        public NativeKeyListener getNativeKeyListener() {
-            return new NativeKeyListener() {
-                @Override
-                public void nativeKeyPressed(NativeKeyEvent nativeKeyEvent) {
-                    if (keyPressedCons != null)
-                        keyPressedCons.accept(new GlobalKeyEvent(nativeKeyEvent));
-                }
+				@Override
+				public void nativeKeyReleased(NativeKeyEvent nke) {
+					if (keyReleasedCons != null) {
+						keyReleasedCons.accept(new GlobalKeyEvent(nke));
+					}
+				}
 
-                @Override
-                public void nativeKeyReleased(NativeKeyEvent nativeKeyEvent) {
-                    if (keyReleasedCons != null)
-                        keyReleasedCons.accept(new GlobalKeyEvent(nativeKeyEvent));
-                }
+				@Override
+				public void nativeKeyTyped(NativeKeyEvent nke) {
 
-                @Override
-                public void nativeKeyTyped(NativeKeyEvent nativeKeyEvent) {
-                    System.err.println("Operation not supported.");
-                }
-            };
-        }
-    }
+				}
+			};
+		}
+
+	}
 
 }

@@ -84,7 +84,6 @@ public class App {
 
     public static void main(String[] args) throws InterruptedException, AWTException {
         System.out.println("Starting Priston Bot...");
-        Thread.sleep(5000);
 
         ExecutorService executor = Executors.newFixedThreadPool(4);
         GlobalScreenEventsListener eventsListener = new GlobalScreenEventsListener();

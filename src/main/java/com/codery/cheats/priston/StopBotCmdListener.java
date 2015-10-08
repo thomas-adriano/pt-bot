@@ -1,6 +1,7 @@
 package com.codery.cheats.priston;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -15,6 +16,7 @@ public class StopBotCmdListener implements CmdListener {
 	private final ScreenEventsListener eventsListener;
 	private final Integer[] stopCmd;
 	private boolean stillRunning = true;
+	private final long[] executionTimes = new long[1];
 
 	public <T extends ScreenEventsListener> StopBotCmdListener(ExecutorService executor, T eventsListener,
 			Integer[] stopCmd) {
@@ -29,23 +31,38 @@ public class StopBotCmdListener implements CmdListener {
 		Runnable stopListener = new Runnable() {
 			@Override
 			public void run() {
+
 				ScreenEventsListener.KeyListener l = new GlobalScreenEventsListener.GlobalKeyListener();
 				Set<Integer> keysPressed = new HashSet<>();
 
 				l.keyPressed((k) -> {
-					// 162 pressed! ¢
-					// 164 pressed! ¤
-					// 88 pressed! X
+					Object lock = new Object();
+					synchronized (lock) {
+						long timeElapsed = -1;
 
-					for (int i = 0; i < stopCmd.length; i++) {
-						if (k.asciiCode() == stopCmd[i]) {
-							keysPressed.add(stopCmd[i]);
+						if (executionTimes[0] == 0) {
+							executionTimes[0] = k.eventTime();
+						} else {
+							timeElapsed = k.eventTime() - executionTimes[0];
+							executionTimes[0] = k.eventTime();
 						}
-					}
 
-					if (keysPressed.size() == stopCmd.length) {
-						System.out.println("Stop command " + Arrays.toString(stopCmd) + " pressed.");
-						terminateBot();
+						System.out.println("Time elapsed since last keypress: " + timeElapsed);
+
+						if (timeElapsed > 1l && timeElapsed != -1) {
+							keysPressed.clear();
+						}
+
+						for (int i = 0; i < stopCmd.length; i++) {
+							if (k.asciiCode() == stopCmd[i]) {
+								keysPressed.add(stopCmd[i]);
+							}
+						}
+
+						if (keysPressed.size() == stopCmd.length) {
+							System.out.println("Stop command " + Arrays.toString(stopCmd) + " pressed.");
+							terminateBot();
+						}
 					}
 
 				});
@@ -72,7 +89,7 @@ public class StopBotCmdListener implements CmdListener {
 		while (!executor.isShutdown()) {
 			sleep(100);
 		}
-	
+
 		System.exit(-1);
 	}
 

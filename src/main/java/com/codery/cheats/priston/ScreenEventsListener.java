@@ -28,6 +28,8 @@ public interface ScreenEventsListener extends AutoCloseable {
     	char character();
     	
         int asciiCode();
+        
+        long eventTime();
 
     }
 }

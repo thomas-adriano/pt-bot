@@ -34,6 +34,7 @@ public class DefaultApplication implements Application {
     @Override
     public void start() {
         for (CmdListener listener : cmdListeners) {
+        	System.out.println("Stargint listener "+listener);
             listener.start();
         }
 
