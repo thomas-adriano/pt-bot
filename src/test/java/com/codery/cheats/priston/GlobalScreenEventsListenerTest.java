@@ -28,7 +28,7 @@ public class GlobalScreenEventsListenerTest {
 
 		l.listen();
 
-//		l.stopListening();
+//		keyListener.stopListening();
 		
 		while (true) {
 			Thread.sleep(100);
