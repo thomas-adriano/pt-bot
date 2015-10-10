@@ -3,6 +3,7 @@ version '1.0-simple-clicking'
 
 apply plugin: 'java'
 apply plugin: 'application'
+apply plugin: 'findbugs'
 
 sourceCompatibility = 1.8
 

@@ -1,8 +1,11 @@
 package com.codery.cheats.priston;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -15,7 +18,7 @@ public class App {
         @Override
         public void run() {
             Bot b = new DefaultBot();
-            Script s = b.createScript();
+            Script s = b.createScript("WALKING_LEVELING");
             Screen screen = new Screen();
 //
 //        //TODO the use of interval its being repetitive. Put the minumum
@@ -38,7 +41,7 @@ public class App {
         @Override
         public void run() {
             Bot b = new DefaultBot();
-            Script s = b.createScript();
+            Script s = b.createScript("STATIC_LEVELING");
 
             //TODO the use of interval its being repetitive. Put the minumum
             //amount of time to use a potion directly at UsePot class.
@@ -58,7 +61,7 @@ public class App {
         @Override
         public void run() {
             Bot b = new DefaultBot();
-            Script s = b.createScript();
+            Script s = b.createScript("SIMPLE_CLICKING");
 
             //TODO the use of interval its being repetitive. Put the minumum
             //amount of time to use a potion directly at UsePot class.
@@ -70,27 +73,27 @@ public class App {
         }
     };
 
-    private final static Integer[] DEFAULT_STOP_CMD = new Integer[]{162/*ctrl*/, 164/*alt*/, 88/*x*/};
-    private final static Integer[] DEFAULT_START_CMD_0 = new Integer[]{162/*ctrl*/, 164/*alt*/, 48};
-    private final static Integer[] DEFAULT_START_CMD_1 = new Integer[]{162/*ctrl*/, 164/*alt*/, 49};
-    private final static Integer[] DEFAULT_START_CMD_2 = new Integer[]{162/*ctrl*/, 164/*alt*/, 50};
-    private final static Integer[] DEFAULT_START_CMD_3 = new Integer[]{162/*ctrl*/, 164/*alt*/, 51};
-    private final static Integer[] DEFAULT_START_CMD_4 = new Integer[]{162/*ctrl*/, 164/*alt*/, 52};
-    private final static Integer[] DEFAULT_START_CMD_5 = new Integer[]{162/*ctrl*/, 164/*alt*/, 53};
-    private final static Integer[] DEFAULT_START_CMD_6 = new Integer[]{162/*ctrl*/, 164/*alt*/, 54};
-    private final static Integer[] DEFAULT_START_CMD_7 = new Integer[]{162/*ctrl*/, 164/*alt*/, 55};
-    private final static Integer[] DEFAULT_START_CMD_8 = new Integer[]{162/*ctrl*/, 164/*alt*/, 56};
-    private final static Integer[] DEFAULT_START_CMD_9 = new Integer[]{162/*ctrl*/, 164/*alt*/, 57};
+    private final static Set<Integer> DEFAULT_STOP_CMD = new HashSet<>(Arrays.asList(162/*ctrl*/, 164/*alt*/, 88/*x*/));
+    private final static Set<Integer> DEFAULT_START_CMD_0 = new HashSet<>(Arrays.asList(162/*ctrl*/, 164/*alt*/, 48));
+    private final static Set<Integer> DEFAULT_START_CMD_1 = new HashSet<>(Arrays.asList(162/*ctrl*/, 164/*alt*/, 49));
+    private final static Set<Integer> DEFAULT_START_CMD_2 = new HashSet<>(Arrays.asList(162/*ctrl*/, 164/*alt*/, 50));
+//    private final static Integer[] DEFAULT_START_CMD_3 = new Integer[]{162/*ctrl*/, 164/*alt*/, 51};
+//    private final static Integer[] DEFAULT_START_CMD_4 = new Integer[]{162/*ctrl*/, 164/*alt*/, 52};
+//    private final static Integer[] DEFAULT_START_CMD_5 = new Integer[]{162/*ctrl*/, 164/*alt*/, 53};
+//    private final static Integer[] DEFAULT_START_CMD_6 = new Integer[]{162/*ctrl*/, 164/*alt*/, 54};
+//    private final static Integer[] DEFAULT_START_CMD_7 = new Integer[]{162/*ctrl*/, 164/*alt*/, 55};
+//    private final static Integer[] DEFAULT_START_CMD_8 = new Integer[]{162/*ctrl*/, 164/*alt*/, 56};
+//    private final static Integer[] DEFAULT_START_CMD_9 = new Integer[]{162/*ctrl*/, 164/*alt*/, 57};
 
     public static void main(String[] args) throws InterruptedException, AWTException {
         System.out.println("Starting Priston Bot...");
 
-        ExecutorService executor = Executors.newFixedThreadPool(4);
+        ExecutorService executor = Executors.newCachedThreadPool();
         GlobalScreenEventsListener eventsListener = new GlobalScreenEventsListener();
 
         Application app = new DefaultApplication();
 
-        Map<Integer[], BotStrategy> strategies = new HashMap<>();
+        Map<Set<Integer>, BotStrategy> strategies = new HashMap<>();
         strategies.put(DEFAULT_START_CMD_0, SIMPLE_CLICKING);
         strategies.put(DEFAULT_START_CMD_1, WALKING_LEVELING);
         strategies.put(DEFAULT_START_CMD_2, STATIC_LEVELING);
@@ -98,7 +101,7 @@ public class App {
         CmdListener l1 = new StopBotCmdListener(executor, eventsListener, DEFAULT_STOP_CMD);
         CmdListener l2 = new StartBotCmdListener(executor, eventsListener, app, strategies);
 
-        app.registerListeners(l2);
+        app.registerListeners(l1, l2);
         app.registerStrategies(WALKING_LEVELING, SIMPLE_CLICKING, STATIC_LEVELING);
 
         app.start();

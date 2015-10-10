@@ -14,8 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
@@ -61,7 +59,7 @@ public class DefaultBotTest {
 
         List<Integer> actualTimes = new ArrayList<>();
         final int tresholdTimes = 10000;
-        doAnswer(new Answer() {
+        doAnswer(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 if (actualTimes.size() == tresholdTimes) {
@@ -78,7 +76,7 @@ public class DefaultBotTest {
 
     @Test
     public void shouldCreate_ADefaultScript_WhenCreateScriptIsCalled() {
-        Script s = bot.createScript();
+        Script s = bot.createScript("TestScript");
         assertTrue("Type of script created should be " + DefaultScript.class.getSimpleName(), s.getClass().equals(DefaultScript.class));
     }
 

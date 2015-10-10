@@ -19,11 +19,11 @@ public class CastBuff extends BaseAction  {
         }
         effectiveInterval -= 600;
         r.pressKey(key.value());
-        r.sleep(250);
+        SmarterRobot.sleep(250);
         r.pressKey(key.value());
-        r.sleep(250);
+        SmarterRobot.sleep(250);
         r.pressKey(key.value());
-        r.sleep(100);
+        SmarterRobot.sleep(100);
         r.clickRight();
     }
 }

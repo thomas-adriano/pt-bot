@@ -16,11 +16,9 @@ public class SmarterRobotTest {
 
     @Test
     public void shouldSleep_theIntervalGiven() throws AWTException {
-        SmarterRobot robot = new SmarterRobot();
-
         long init = System.currentTimeMillis();
 
-        robot.sleep(2000);
+        SmarterRobot.sleep(2000);
 
         long end = System.currentTimeMillis();
         long elapsed = end - init;

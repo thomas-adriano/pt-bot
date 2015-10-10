@@ -7,7 +7,7 @@ public class ASCIIUtils {
 
     static int getAsciiCode(String key) {
         if (key.length() == 1) {
-            return (int) key.charAt(0);
+            return key.charAt(0);
         }
 
         if (key.length() == 2 && (key.startsWith("F") || key.startsWith("f"))) {
@@ -26,15 +26,5 @@ public class ASCIIUtils {
             }
         }
         throw new RuntimeException("Ascii key \"" + fkey + "\" could not be found.");
-    }
-
-    private static int getAsciiNumber(int number) {
-        for (int i = 0x30, j = 0; i <= 0x39; i++, j++) {
-            if (number == j) {
-                System.out.println("  ASCII code found! Code: " + i);
-                return i;
-            }
-        }
-        throw new RuntimeException("Ascii key \"" + number + "\" could not be found.");
     }
 }

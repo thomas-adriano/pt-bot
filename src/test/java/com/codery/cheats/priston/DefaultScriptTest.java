@@ -6,6 +6,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import com.codery.cheats.priston.BaseAction.ConstraintAfter;
+
 import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
@@ -20,6 +22,8 @@ import static org.mockito.Mockito.*;
 /**
  * Created by thomasadriano on 26/09/15.
  */
+
+@SuppressWarnings("unchecked")
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultScriptTest {
 
@@ -32,7 +36,8 @@ public class DefaultScriptTest {
     @Mock
     private SmarterRobot robot;
 
-    private static final Set TEST_CONSTRAINTS = new HashSet<>(Arrays.asList(new ConstraintAfter(Actions._6, 2)));
+    @SuppressWarnings("rawtypes")
+	private static final Set TEST_CONSTRAINTS = new HashSet<>(Arrays.asList(new ConstraintAfter(Actions._6, 2)));
 
     private DefaultScript script;
 
@@ -42,7 +47,7 @@ public class DefaultScriptTest {
         configureAction(act2);
         configureAction(act3);
 
-        script = new DefaultScript(robot);
+        script = new DefaultScript(robot, "TestScript");
     }
 
     @Test
@@ -88,11 +93,11 @@ public class DefaultScriptTest {
             when(act.getSchedule()).thenReturn(60000l);
             when(act.getInterval()).thenReturn(200l);
             when(act.getTimes()).thenReturn(1);
-            when(act.getLastExecution()).thenReturn((long) System.currentTimeMillis() - 61000l);
+            when(act.getLastExecution()).thenReturn(System.currentTimeMillis() - 61000l);
             when(act.getConstraints()).thenReturn(TEST_CONSTRAINTS);
         });
 
-        script.ACTIONS_COUNTER.put(Actions._6, 2);
+        DefaultScript.ACTIONS_COUNTER.put(Actions._6, 2);
         script.add(act1).add(act2).add(act3);
         script.execute();
 
@@ -107,11 +112,11 @@ public class DefaultScriptTest {
             when(act.getSchedule()).thenReturn(60000l);
             when(act.getInterval()).thenReturn(200l);
             when(act.getTimes()).thenReturn(1);
-            when(act.getLastExecution()).thenReturn((long) System.currentTimeMillis() - 100);
+            when(act.getLastExecution()).thenReturn(System.currentTimeMillis() - 100);
             when(act.getConstraints()).thenReturn(TEST_CONSTRAINTS);
         });
 
-        script.ACTIONS_COUNTER.put(Actions._6, 2);
+        DefaultScript.ACTIONS_COUNTER.put(Actions._6, 2);
         script.add(act1).add(act2).add(act3);
         script.execute();
 
@@ -119,7 +124,6 @@ public class DefaultScriptTest {
         verify(act2, never()).execute(robot);
         verify(act3, never()).execute(robot);
     }
-
 
     @Test
     public void shouldNotExecuteActions_When_ActionsHaveSchedule_And_ScheduleDontMatch() {
@@ -135,7 +139,7 @@ public class DefaultScriptTest {
         verify(act2, never()).execute(robot);
         verify(act3).execute(robot);
     }
-
+    
     @Test
     public void shouldExecuteActions_When_ActionsHaveSchedule_And_ScheduleMatch() {
         configureActions(Arrays.asList(act1, act2), (act) -> {
@@ -152,7 +156,7 @@ public class DefaultScriptTest {
         verify(act3).execute(robot);
     }
 
-    @Test
+	@Test
     public void shouldAlwaysExecuteActions_When_ActionWasNotExecutedYet_And_ThereAreNoConstraints() {
         configureActions(Arrays.asList(act1, act2, act3), (act) -> {
             when(act.getSchedule()).thenReturn(60000l);
@@ -169,7 +173,7 @@ public class DefaultScriptTest {
         verify(act3).execute(robot);
     }
 
-    @Test
+	@Test
     public void shouldExecuteActionsInIntervalls_When_IntervalIsSetted() {
         configureActions(Arrays.asList(act1, act3), (act) -> {
             when(act.getInterval()).thenReturn(200l);
@@ -186,22 +190,14 @@ public class DefaultScriptTest {
         assertThat(end, is(lessThanOrEqualTo(500l)));
     }
 
-    private void sleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void configureAction(GameAction act, Consumer<GameAction>... additionalCfg) {
+	private void configureAction(GameAction act, Consumer<GameAction>... additionalCfg) {
         configureActions(Arrays.asList(act), additionalCfg);
     }
 
-    private void configureActions(List<GameAction> acts, Consumer<GameAction>... additionalCfg) {
+	private void configureActions(List<GameAction> acts, Consumer<GameAction>... additionalCfg) {
         for (GameAction act : acts) {
             when(act.getConstraints()).thenReturn(Collections.emptySet());
-            when(act.getLastExecution()).thenReturn((long) System.currentTimeMillis());
+            when(act.getLastExecution()).thenReturn(System.currentTimeMillis());
             when(act.getSchedule()).thenReturn((long) NO_VALUE);
             when(act.getInterval()).thenReturn(1l);
             when(act.getTimes()).thenReturn(1);

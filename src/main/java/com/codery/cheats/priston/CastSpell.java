@@ -1,7 +1,5 @@
 package com.codery.cheats.priston;
 
-import java.awt.*;
-
 /**
  * Created by thomasadriano on 24/09/15.
  */
@@ -20,7 +18,7 @@ public class CastSpell extends BaseAction {
         }
         effectiveInterval -= 100;
         r.pressKey(key.value());
-        r.sleep(100);
+        SmarterRobot.sleep(100);
         r.clickRight();
     }
 

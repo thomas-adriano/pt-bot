@@ -5,8 +5,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.awt.*;
-
 /**
  * Created by thomasadriano on 28/09/15.
  */
@@ -21,7 +19,7 @@ public class BotIntegrationTest {
         System.out.println("Starting Priston Bot...");
 
         Bot b = new DefaultBot();
-        Script s = new DefaultScript(robot);
+        Script s = new DefaultScript(robot, "testScript");
 
 //        s.add(
 //                new CastSpell(Actions.F4).interval(2000).schedule(361000))

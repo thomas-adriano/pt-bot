@@ -2,7 +2,6 @@ package com.codery.cheats.priston;
 
 import javaslang.collection.List;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,7 +33,7 @@ public class DefaultApplication implements Application {
     @Override
     public void start() {
         for (CmdListener listener : cmdListeners) {
-        	System.out.println("Stargint listener "+listener);
+        	System.out.println("Startint listener "+listener);
             listener.start();
         }
 

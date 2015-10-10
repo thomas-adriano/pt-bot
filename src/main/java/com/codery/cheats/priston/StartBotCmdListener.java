@@ -5,74 +5,87 @@ import java.util.concurrent.ExecutorService;
 
 public class StartBotCmdListener extends AbstractCmdListener {
 
-    private final Application app;
-    private final Map<Integer[], App.BotStrategy> strategies;
+	private final Application app;
 
-    public <T extends ScreenEventsListener> StartBotCmdListener(ExecutorService executor, T eventsListener,
-                                                                Application app, Map<Integer[], App.BotStrategy> strategies) {
-        super(executor, eventsListener);
-        this.app = app;
-        this.strategies = strategies;
-    }
+	private final Map<Set<Integer>, App.BotStrategy> strategies;
 
-    @Override
-    public void start() {
+	public <T extends ScreenEventsListener> StartBotCmdListener(ExecutorService executor, T eventsListener,
+			Application app, Map<Set<Integer>, App.BotStrategy> strategies) {
+		super(executor, eventsListener);
+		this.app = app;
+		this.strategies = strategies;
+	}
 
-        Runnable stopListener = () -> {
+	@Override
+	public void start() {
 
-            keyListener.keyPressed((k) -> {
-                Object lock = new Object();
+		Runnable startListener = () -> {
 
-                synchronized (lock) {
-                    resetKeysPressed(k);
+			keyListener.keyPressed((k) -> {
 
-                    for (Integer[] cmd : strategies.keySet()) {
-                        for (int i = 0; i < cmd.length; i++) {
-                            if (k.asciiCode() == cmd[i]) {
-                                if (!keysPressed.contains(cmd[i])) {
-                                    keysPressed.add(cmd[i]);
-                                }
-                            }
-                        }
-                    }
+				resetKeysPressed(k);
 
-                    if (strategies.containsKey(keysPressed.toArray(new Integer[keysPressed.size()])) && !running) {
-                        System.out.println("Start command " + keysPressed + " pressed.");
-                        startBot();
-                    }
-                }
+				for (Set<Integer> cmd : strategies.keySet()) {
+					for (Integer i : cmd) {
+						if (k.asciiCode() == i) {
+							if (!keysPressed.contains(i)) {
+								keysPressed.add(i);
+							}
+						}
 
-            });
+					}
+				}
 
-            eventsListener.addKeyListener(keyListener);
-            eventsListener.listen();
+				if (strategies.containsKey(keysPressed)) {
+					System.out.print("");
+					startBot();
+				}
 
-            while (running) {
-                sleep(100);
-            }
-        };
+			});
 
+			eventsListener.addKeyListener(keyListener);
+			eventsListener.listen();
 
-        executor.submit(stopListener);
-    }
+			while (running) {
+				sleep(100);
+			}
+		};
 
-    @Override
-    public void stop() {
-        running = false;
-    }
+		executor.submit(startListener);
+	}
 
-    public void startBot() {
-        running = true;
-        app.runStrategy(strategies.get(keysPressed));
-    }
+	@Override
+	public void stop() {
+		running = false;
+	}
 
-    private void sleep(long millis) {
+	public void startBot() {
+		if (!running) {
+			runStrategy();
+			running = true;
+		} else {
+			executor.shutdownNow();
+			while (!executor.isTerminated()) {sleep(100);}
+			running = false;
+			runStrategy();
+		}
+	}
 
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            throw new RuntimeException("There was a problem trying to sleep here, bro.");
-        }
+	private void runStrategy() {
+		Runnable r = () -> {
+			app.runStrategy(strategies.get(keysPressed));
+		};
+		
+		executor.submit(r);	
+	}
+	
+	private void sleep(long millis) {
 
-    }
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			throw new RuntimeException("There was a problem trying to sleep here, bro.");
+		}
+
+	}
 }

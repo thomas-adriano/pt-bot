@@ -67,11 +67,11 @@ public abstract class BaseAction implements GameAction {
     }
 
     private void waitInterval(SmarterRobot r) {
-        r.sleep(this.getInterval());
+        SmarterRobot.sleep(this.getInterval());
     }
 
     private void incTimesUsed() {
-        Integer timesUsed = (Integer) DefaultScript.ACTIONS_COUNTER.get(key);
+        Integer timesUsed = DefaultScript.ACTIONS_COUNTER.get(key);
         if (timesUsed == null) {
             timesUsed = 0;
         }
@@ -145,15 +145,18 @@ public abstract class BaseAction implements GameAction {
             this.lastActualTimesExecuted = 0;
         }
 
-        public Actions getAction() {
+        @Override
+		public Actions getAction() {
             return act;
         }
 
-        public int getTimes() {
+        @Override
+		public int getTimes() {
             return times;
         }
 
-        public boolean fulfills(int actualTimesExecuted) {
+        @Override
+		public boolean fulfills(int actualTimesExecuted) {
             if ((lastActualTimesExecuted == 0 && actualTimesExecuted >= times)
                     || (lastActualTimesExecuted != 0 && (actualTimesExecuted - lastActualTimesExecuted) >= times)) {
                 lastActualTimesExecuted = actualTimesExecuted;

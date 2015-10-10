@@ -1,9 +1,6 @@
 package com.codery.cheats.priston;
 
 import java.awt.*;
-import java.util.*;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
 
 /**
  * Created by thomasadriano on 24/09/15.
@@ -18,14 +15,14 @@ public class DefaultBot implements Bot {
 
 
     @Override
-    public Script createScript() {
+    public Script createScript(String scriptName) {
         SmarterRobot r = null;
         try {
             r = new SmarterRobot();
         } catch (AWTException e) {
             throw new RuntimeException("It was not possible to create an isntace of " + Robot.class.getSimpleName() + ". " + e.getMessage());
         }
-        return new DefaultScript(r);
+        return new DefaultScript(r, scriptName);
     }
 
     private static class DefaultExecutionPromise implements ExecutionPromise {

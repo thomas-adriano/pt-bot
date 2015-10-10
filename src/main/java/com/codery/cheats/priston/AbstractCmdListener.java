@@ -1,7 +1,7 @@
 package com.codery.cheats.priston;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -14,7 +14,7 @@ public abstract class AbstractCmdListener implements CmdListener {
     protected final ExecutorService executor;
     protected final ScreenEventsListener eventsListener;
     private final long[] lastExecutionTime = new long[1];
-    protected List<Integer> keysPressed = new ArrayList<>();
+    protected Set<Integer> keysPressed = new HashSet<>();
     protected ScreenEventsListener.KeyListener keyListener = new GlobalScreenEventsListener.GlobalKeyListener();
 
     public AbstractCmdListener(ExecutorService executor, ScreenEventsListener eventsListener) {
@@ -31,8 +31,6 @@ public abstract class AbstractCmdListener implements CmdListener {
             timeElapsed = k.eventTime() - lastExecutionTime[0];
             lastExecutionTime[0] = k.eventTime();
         }
-
-        System.out.println("Time elapsed since last keypress: " + timeElapsed);
 
         if (timeElapsed > 1l && timeElapsed != -1) {
             keysPressed.clear();

@@ -1,8 +1,6 @@
 package com.codery.cheats.priston;
 
-import java.awt.*;
 import java.util.Set;
-import java.util.function.Predicate;
 
 /**
  * Created by thomasadriano on 24/09/15.

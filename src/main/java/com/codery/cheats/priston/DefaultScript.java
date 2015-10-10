@@ -1,6 +1,5 @@
 package com.codery.cheats.priston;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,13 +14,11 @@ public class DefaultScript implements Script {
     private final List<GameAction> actions = new ArrayList<>();
     static final Map<Actions, Integer> ACTIONS_COUNTER = new ConcurrentHashMap<>();
     private final SmarterRobot robot;
-
-    DefaultScript(SmarterRobot robot) {
+    private final String name;
+    	
+    DefaultScript(SmarterRobot robot, String scriptName) {
         this.robot = robot;
-    }
-
-    private DefaultScript() {
-        this.robot = null;
+        this.name = scriptName;
     }
 
     @Override
@@ -67,7 +64,7 @@ public class DefaultScript implements Script {
 
     @Override
     public void printSummary() {
-        System.out.println("                        SCRIPT SUMMARY                        ");
+        System.out.println("                        SCRIPT \""+name+"\" SUMMARY                        ");
         actions.forEach((act) ->
                 {
                     System.out.println(act.toString());
@@ -76,4 +73,9 @@ public class DefaultScript implements Script {
         System.out.println("--------------------------------------------------------------");
         System.out.println();
     }
+
+	@Override
+	public String getName() {
+		return name;
+	}
 }

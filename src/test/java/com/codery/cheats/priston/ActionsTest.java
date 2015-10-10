@@ -1,6 +1,5 @@
 package com.codery.cheats.priston;
 
-import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -12,7 +11,6 @@ import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -98,7 +96,8 @@ public class ActionsTest {
 
         act.execute(robot);
 
-        verify(robot).sleep(5000);
+        verify(robot);
+		SmarterRobot.sleep(5000);
     }
 
     @Test
