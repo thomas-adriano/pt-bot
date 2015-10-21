@@ -1,5 +1,6 @@
 package com.codery.cheats.priston;
 
+import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
@@ -32,7 +33,8 @@ public class StopBotCmdListener extends AbstractCmdListener {
 						}
 					}
 
-					if (keysPressed.equals(stopCmd)) {
+					if (keysPressed.containsAll(stopCmd) && running) {
+						System.out.println("Stop command " + stopCmd + " pressed.");
 						terminateBot();
 					}
 				}

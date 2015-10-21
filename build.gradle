@@ -1,5 +1,5 @@
 group 'com.codery.cheats'
-version '1.0-simple-clicking'
+version '1.0-118up'
 
 apply plugin: 'java'
 apply plugin: 'application'

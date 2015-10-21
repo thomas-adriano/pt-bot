@@ -25,14 +25,15 @@ public abstract class AbstractCmdListener implements CmdListener {
     protected void resetKeysPressed(ScreenEventsListener.KeyEvent k) {
         long timeElapsed = -1;
 
-        if (lastExecutionTime[0] == 0) {
-            lastExecutionTime[0] = k.eventTime();
-        } else {
+        if (lastExecutionTime[0] != 0) {
             timeElapsed = k.eventTime() - lastExecutionTime[0];
-            lastExecutionTime[0] = k.eventTime();
         }
 
-        if (timeElapsed > 1l && timeElapsed != -1) {
+        lastExecutionTime[0] = k.eventTime();
+
+        System.out.println("Time elapsed since last keypress: " + timeElapsed);
+
+        if (timeElapsed > 300l && timeElapsed != -1) {
             keysPressed.clear();
         }
     }
