@@ -31,7 +31,7 @@ public class StopBotCmdListener extends AbstractCmdListener {
                         }
                     }
 
-                    if (keysPressed.size() == stopCmd.length) {
+                    if (keysPressed.containsAll(Arrays.asList(stopCmd)) && running) {
                         System.out.println("Stop command " + Arrays.toString(stopCmd) + " pressed.");
                         terminateBot();
                     }
