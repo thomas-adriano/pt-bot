@@ -21,7 +21,6 @@ public class ASCIIUtils {
     private static int getAsciiFunctionKey(String fkey) {
         for (int i = 0x70, j = 1; i <= 0x81; i++, j++) {
             if (new StringBuilder("F").append(j).toString().equalsIgnoreCase(fkey)) {
-                System.out.println("  ASCII code found! Code: " + i);
                 return i;
             }
         }

@@ -76,7 +76,7 @@ public class StartBotCmdListener extends AbstractCmdListener {
 			app.runStrategy(strategies.get(keysPressed));
 		};
 		
-		executor.submit(r);	
+		executor.submit(r);
 	}
 	
 	private void sleep(long millis) {

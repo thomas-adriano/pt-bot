@@ -50,12 +50,12 @@ public class App {
             //TODO the use of interval its being repetitive. Put the minumum
             //amount of time to use a potion directly at UsePot class.
             s.add(
-                    new CastSpell(Actions.F6).interval(1300).schedule(298_000)) //bubble
-                    .add(new CastSpell(Actions.F5).interval(1300).schedule(301_000)) //fairy   
-                    .add(new CastSpell(Actions._4).interval(1300).schedule(301_000)) //mana boost
-                    .add(new CastSpell(Actions._5).interval(200)) //earthquake
-                    .add(new UsePotion(3).interval(10_000)) //mana pot
-                    .add(new UsePotion(1).interval(33_000)) //res pot
+                    new CastBuff(Actions.F6).interval(1300).schedule(298_000)) //bubble
+                    .add(new CastBuff(Actions.F5).interval(1300).schedule(301_000)) //fairy   
+                    .add(new CastBuff(Actions._4).interval(1300).schedule(301_000)) //mana boost
+                    .add(new CastSpell(Actions._5).interval(333)) //earthquake
+                    .add(new UsePotion(3).schedule(10_000)) //mana pot
+                    .add(new UsePotion(1).schedule(33_000)) //res pot
                     .add(new UsePotion(2).schedule(25_000)); //hp pot
 
             b.run(s).forever();
@@ -116,7 +116,7 @@ public class App {
         CmdListener l2 = new StartBotCmdListener(executor, eventsListener, app, strategies);
 
 
-        app.registerListeners(l1, l2);
+        app.registerListeners(l2);
         app.registerStrategies(WALKING_LEVELING, SIMPLE_CLICKING, STATIC_LEVELING);
 
         app.start();
@@ -124,7 +124,7 @@ public class App {
 
     public interface BotStrategy {
 
-        void run();
+		void run();
 
-    }
+	}
 }
